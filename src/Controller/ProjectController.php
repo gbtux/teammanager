@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Project;
 use App\Form\ProjectType;
+use App\Repository\MilestoneRepository;
 use App\Repository\ProjectMemberRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\RoleRepository;
@@ -16,7 +17,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class ProjectController extends AbstractController
 {
-    #[Route('/projects', name: 'app_projects')]
+    #[Route('/projects', name: 'app_projects', methods: ['GET'])]
     public function index(ProjectRepository $projectRepository): Response
     {
         $projects = $projectRepository->findAll();
@@ -29,13 +30,16 @@ final class ProjectController extends AbstractController
     public function show(Project $project,
                          ProjectMemberRepository $memberRepository,
                          UserRepository $userRepository,
-                         RoleRepository $roleRepository
+                         RoleRepository $roleRepository,
+                         MilestoneRepository $milestoneRepository
     ): Response
     {
         $members = $memberRepository->findBy(['project' => $project]);
+        $milestones = $milestoneRepository->findBy(['project' => $project]);
         return $this->inertiaRender('projects/show', [
             "project" => $project,
             "members" => $members,
+            "milestones" => $milestones,
             "all_users" => $userRepository->findAll(),
             "all_roles" => $roleRepository->findAll(),
         ]);
@@ -56,7 +60,8 @@ final class ProjectController extends AbstractController
                 $entityManager->flush();
                 return $this->redirectToRoute('app_projects_show', ['id' => $project->getId()]);
             }
+            dd("argh");
         }
-        return null;
+        return $this->redirect($request->headers->get('referer'));
     }
 }

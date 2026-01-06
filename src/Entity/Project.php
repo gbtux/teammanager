@@ -50,9 +50,16 @@ class Project
     #[ORM\OneToMany(targetEntity: ProjectMember::class, mappedBy: 'project')]
     private Collection $projectMembers;
 
+    /**
+     * @var Collection<int, Milestone>
+     */
+    #[ORM\OneToMany(targetEntity: Milestone::class, mappedBy: 'project')]
+    private Collection $milestones;
+
     public function __construct()
     {
         $this->projectMembers = new ArrayCollection();
+        $this->milestones = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -192,6 +199,36 @@ class Project
             // set the owning side to null (unless already changed)
             if ($projectMember->getProject() === $this) {
                 $projectMember->setProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Milestone>
+     */
+    public function getMilestones(): Collection
+    {
+        return $this->milestones;
+    }
+
+    public function addMilestone(Milestone $milestone): static
+    {
+        if (!$this->milestones->contains($milestone)) {
+            $this->milestones->add($milestone);
+            $milestone->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMilestone(Milestone $milestone): static
+    {
+        if ($this->milestones->removeElement($milestone)) {
+            // set the owning side to null (unless already changed)
+            if ($milestone->getProject() === $this) {
+                $milestone->setProject(null);
             }
         }
 

@@ -26,9 +26,9 @@ const breadcrumbs: BreadcrumbItem[] = [
     }
 ];
 
-export default function ProjectPage({ project, members, all_users, all_roles }: ProjectPageProps ) {
+export default function ProjectPage({ project, members, milestones, all_users, all_roles }: ProjectPageProps ) {
     const [activeTab, setActiveTab] = useState('planning');
-    console.log(members)
+    console.log(members, milestones)
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={project.name} />
@@ -100,7 +100,7 @@ export default function ProjectPage({ project, members, all_users, all_roles }: 
                     <TabsList className="grid w-full grid-cols-6">
                         <TabsTrigger value="planning">Planning</TabsTrigger>
                         <TabsTrigger value="workload">Workload</TabsTrigger>
-                        <TabsTrigger value="operations">Operations</TabsTrigger>
+                        <TabsTrigger value="operations">Milestones</TabsTrigger>
                         <TabsTrigger value="kanban">Kanban</TabsTrigger>
                         <TabsTrigger value="files">Files</TabsTrigger>
                         <TabsTrigger value="team">Team</TabsTrigger>
@@ -112,7 +112,7 @@ export default function ProjectPage({ project, members, all_users, all_roles }: 
                                 <CardDescription>Gantt chart view of project tasks and milestones</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <GanttChart project={project} />
+                                <GanttChart project={project} milestones={milestones} />
                             </CardContent>
                         </Card>
                     </TabsContent>

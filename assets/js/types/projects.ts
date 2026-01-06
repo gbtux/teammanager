@@ -36,9 +36,21 @@ interface ProjectMember {
     project: Project;
     role: Role;
 }
+interface Milestone {
+    id: string;
+    title: string;
+    description: string;
+    active: boolean;
+    status: string;
+    startDate: string;
+    endDate: string;
+    progress: number;
+    createdBy: User
+}
 interface ProjectPageProps {
     project: Project;
     members: ProjectMember[];
+    milestones: Milestone[];
     all_roles: Role[];
     all_users: User[];
 }
@@ -79,9 +91,10 @@ interface GanttTask {
 
 interface GanttChartProps {
     project: Project;
+    milestones: Milestone[];
 }
 
 export type { Project, ProjectsPageProps, ProjectModalProps,
-    ProjectFormData, ProjectConfirmProps, ProjectPageProps, GanttTask, GanttChartProps };
+    ProjectFormData, ProjectConfirmProps, ProjectPageProps, GanttTask, GanttChartProps, Milestone };
 
 
