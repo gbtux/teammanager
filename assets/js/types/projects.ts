@@ -45,12 +45,20 @@ interface Milestone {
     startDate: string;
     endDate: string;
     progress: number;
-    createdBy: User
+    createdBy: User,
+    tasks: Task[]
 }
 interface ProjectPageProps {
     project: Project;
     members: ProjectMember[];
     milestones: Milestone[];
+    all_roles: Role[];
+    all_users: User[];
+}
+
+interface TeamMembersProps {
+    project: Project;
+    members: ProjectMember[];
     all_roles: Role[];
     all_users: User[];
 }
@@ -94,7 +102,18 @@ interface GanttChartProps {
     milestones: Milestone[];
 }
 
+interface Task {
+    id: string
+    title: string
+    description: string
+    completed: boolean
+    assignee: string
+    dueDate: string
+    status: string;
+    priority: "Low" | "Medium" | "High"
+}
+
 export type { Project, ProjectsPageProps, ProjectModalProps,
-    ProjectFormData, ProjectConfirmProps, ProjectPageProps, GanttTask, GanttChartProps, Milestone };
+    ProjectFormData, ProjectConfirmProps, ProjectPageProps, GanttTask, GanttChartProps, Milestone, Task, TeamMembersProps };
 
 

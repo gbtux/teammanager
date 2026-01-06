@@ -20,6 +20,19 @@ export const getStatusColor = (status: string) => {
     }
 };
 
+export const getTaskStatusColor = (status: string) => {
+    switch (status) {
+        case 'To Do':
+            return 'bg-gray-500 text-white';
+        case 'In Progress':
+            return 'bg-blue-500 text-white';
+        case 'Review':
+            return 'bg-yellow-500 text-white';
+        default:
+            return 'bg-green-500 text-white';
+    }
+}
+
 export const getPriorityColor = (priority: string) => {
     switch (priority) {
         case 'High':

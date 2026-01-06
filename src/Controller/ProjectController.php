@@ -35,13 +35,36 @@ final class ProjectController extends AbstractController
     ): Response
     {
         $members = $memberRepository->findBy(['project' => $project]);
-        $milestones = $milestoneRepository->findBy(['project' => $project]);
+        $milestones = $milestoneRepository->findByProjectWithTasks($project);
         return $this->inertiaRender('projects/show', [
             "project" => $project,
             "members" => $members,
-            "milestones" => $milestones,
             "all_users" => $userRepository->findAll(),
             "all_roles" => $roleRepository->findAll(),
+            'milestones' => array_map(fn($milestone) => [
+                'id' => $milestone->getId(),
+                'title' => $milestone->getTitle(),
+                'description' => $milestone->getDescription(),
+                'active' => $milestone->isActive(),
+                'status' => $milestone->getStatus(),
+                'startDate' => $milestone->getStartDate()->format('Y-m-d'),
+                'endDate' => $milestone->getEndDate()->format('Y-m-d'),
+                'progress' => $milestone->getProgress(),
+                'createdBy' => [
+                    'name' => $milestone->getCreatedBy()->getName(),
+                ],
+                // On ajoute la liste des tâches ici
+                'tasks' => $milestone->getTasks()->map(fn($task) => [
+                    'id' => $task->getId(),
+                    'title' => $task->getTitle(),
+                    'description' => $task->getDescription(),
+                    'completed' => $task->isCompleted(),
+                    'priority' => $task->getPriority(),
+                    'status' => $task->getStatus(),
+                    'dueDate' => $task->getDueDate()->format('Y-m-d'),
+                    'assignee' => $task->getAssignee()->getName(),
+                ])->toArray(),
+            ], $milestones),
         ]);
     }
 

@@ -22,6 +22,7 @@ class MilestoneFixtures extends Fixture implements DependentFixtureInterface
         $m1->setEndDate(new \DateTime('2026-02-08'));
         $m1->setProgress(20);
         $manager->persist($m1);
+        $this->addReference('milestone1', $m1);
         $manager->flush();
 
         $manager->flush();

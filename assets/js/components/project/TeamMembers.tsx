@@ -1,4 +1,4 @@
-import { Member, ProjectPageProps } from '@/types/projects';
+import {Member, ProjectPageProps, TeamMembersProps} from '@/types/projects';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -16,7 +16,7 @@ import Routing from "@toyokumo/fos-router";
 import routes from '@/fos_routes';
 Routing.setRoutingData(routes)
 
-export function TeamMembers({ project, members, all_users, all_roles }: ProjectPageProps) {
+export function TeamMembers({ project, members, all_users, all_roles }: TeamMembersProps) {
     const [searchQuery, setSearchQuery] = useState('');
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const { data, setData, post, processing, errors, reset } = useForm({

@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useState } from 'react';
 import GanttChart from '@/components/project/GanttChart';
 import { TeamMembers } from '@/components/project/TeamMembers';
+import MilestoneList from "@/components/project/MilestoneList";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -100,7 +101,7 @@ export default function ProjectPage({ project, members, milestones, all_users, a
                     <TabsList className="grid w-full grid-cols-6">
                         <TabsTrigger value="planning">Planning</TabsTrigger>
                         <TabsTrigger value="workload">Workload</TabsTrigger>
-                        <TabsTrigger value="operations">Milestones</TabsTrigger>
+                        <TabsTrigger value="milestones">Milestones</TabsTrigger>
                         <TabsTrigger value="kanban">Kanban</TabsTrigger>
                         <TabsTrigger value="files">Files</TabsTrigger>
                         <TabsTrigger value="team">Team</TabsTrigger>
@@ -113,6 +114,17 @@ export default function ProjectPage({ project, members, milestones, all_users, a
                             </CardHeader>
                             <CardContent>
                                 <GanttChart project={project} milestones={milestones} />
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+                    <TabsContent value="milestones" className="space-y-4">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Project Milestones</CardTitle>
+                                <CardDescription>Manage project operations and their associated tasks</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <MilestoneList project={project} milestones={milestones} />
                             </CardContent>
                         </Card>
                     </TabsContent>
