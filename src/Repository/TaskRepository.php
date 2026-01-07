@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Project;
 use App\Entity\Task;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -14,6 +15,19 @@ class TaskRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Task::class);
+    }
+
+    public function findTasksByProjectForKanban(Project $project): array
+    {
+        return $this->createQueryBuilder('t')
+            ->addSelect('m', 'a') // On joint la milestone et l'assigné
+            ->join('t.milestone', 'm')
+            ->leftJoin('t.assignee', 'a')
+            ->where('m.project = :project')
+            ->setParameter('project', $project)
+            ->orderBy('t.dueDate', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     //    /**

@@ -11,6 +11,7 @@ import { useState } from 'react';
 import GanttChart from '@/components/project/GanttChart';
 import { TeamMembers } from '@/components/project/TeamMembers';
 import MilestoneList from "@/components/project/MilestoneList";
+import Kanban from "@/components/project/Kanban";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -27,9 +28,8 @@ const breadcrumbs: BreadcrumbItem[] = [
     }
 ];
 
-export default function ProjectPage({ project, members, milestones, all_users, all_roles }: ProjectPageProps ) {
+export default function ProjectPage({ project, members, milestones, all_users, all_roles, kanban }: ProjectPageProps ) {
     const [activeTab, setActiveTab] = useState('planning');
-    console.log(members, milestones)
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={project.name} />
@@ -125,6 +125,13 @@ export default function ProjectPage({ project, members, milestones, all_users, a
                             </CardHeader>
                             <CardContent>
                                 <MilestoneList project={project} milestones={milestones} />
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+                    <TabsContent value="kanban" className="space-y-4">
+                        <Card>
+                            <CardContent>
+                                <Kanban project={project} kanban={kanban} />
                             </CardContent>
                         </Card>
                     </TabsContent>

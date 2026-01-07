@@ -8,6 +8,7 @@ use App\Repository\MilestoneRepository;
 use App\Repository\ProjectMemberRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\RoleRepository;
+use App\Repository\TaskRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Gbtux\InertiaBundle\Controller\AbstractController;
@@ -31,9 +32,33 @@ final class ProjectController extends AbstractController
                          ProjectMemberRepository $memberRepository,
                          UserRepository $userRepository,
                          RoleRepository $roleRepository,
-                         MilestoneRepository $milestoneRepository
+                         MilestoneRepository $milestoneRepository,
+                         TaskRepository $taskRepository
     ): Response
     {
+        $kanbanData = [
+            'To Do' => [],
+            'In Progress' => [],
+            'Review' => [],
+            'Done' => []
+        ];
+        $tasks = $taskRepository->findTasksByProjectForKanban($project);
+        foreach ($tasks as $task) {
+            $status = $task->getStatus();
+            if (isset($kanbanData[$status])) {
+                $kanbanData[$status][] = [
+                    'id' => $task->getId(),
+                    'title' => $task->getTitle(),
+                    'description' => $task->getDescription(),
+                    'priority' => $task->getPriority(),
+                    'dueDate' => $task->getDueDate() ? $task->getDueDate()->format('Y-m-d') : null,
+                    'completed' => $task->isCompleted(),
+                    'assignee' => $task->getAssignee()->getName(),
+                    'milestoneTitle' => $task->getMilestone()->getTitle(),
+                ];
+            }
+        }
+
         $members = $memberRepository->findBy(['project' => $project]);
         $milestones = $milestoneRepository->findByProjectWithTasks($project);
         return $this->inertiaRender('projects/show', [
@@ -65,6 +90,7 @@ final class ProjectController extends AbstractController
                     'assignee' => $task->getAssignee()->getName(),
                 ])->toArray(),
             ], $milestones),
+            'kanban' => $kanbanData
         ]);
     }
 

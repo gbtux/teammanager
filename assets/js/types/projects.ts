@@ -48,12 +48,17 @@ interface Milestone {
     createdBy: User,
     tasks: Task[]
 }
+interface KanbanProps {
+    kanban: Record<string, Task[]>;
+}
+
 interface ProjectPageProps {
     project: Project;
     members: ProjectMember[];
     milestones: Milestone[];
     all_roles: Role[];
     all_users: User[];
+    kanban: KanbanProps
 }
 
 interface TeamMembersProps {
@@ -113,7 +118,12 @@ interface Task {
     priority: "Low" | "Medium" | "High"
 }
 
+interface KanbanPanelProps {
+    kanban: KanbanProps;
+    project: Project;
+}
+
 export type { Project, ProjectsPageProps, ProjectModalProps,
-    ProjectFormData, ProjectConfirmProps, ProjectPageProps, GanttTask, GanttChartProps, Milestone, Task, TeamMembersProps };
+    ProjectFormData, ProjectConfirmProps, ProjectPageProps, GanttTask, GanttChartProps, Milestone, Task, TeamMembersProps, KanbanPanelProps };
 
 
