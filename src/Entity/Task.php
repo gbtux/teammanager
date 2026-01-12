@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\TaskRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -36,7 +38,38 @@ class Task
     private ?Milestone $milestone = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $status = "To Do"; //In Progress - Review - Done
+    private ?string $status = "To Do";
+
+    /**
+     * @var Collection<int, TaskComment>
+     */
+    #[ORM\OneToMany(targetEntity: TaskComment::class, mappedBy: 'task')]
+    private Collection $comments;
+
+    /**
+     * @var Collection<int, TaskTag>
+     */
+    #[ORM\ManyToMany(targetEntity: TaskTag::class)]
+    private Collection $tags;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTime $startDate = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $workload = null;
+
+    /**
+     * @var Collection<int, Workload>
+     */
+    #[ORM\OneToMany(targetEntity: Workload::class, mappedBy: 'task')]
+    private Collection $workloads;
+
+    public function __construct()
+    {
+        $this->comments = new ArrayCollection();
+        $this->tags = new ArrayCollection();
+        $this->workloads = new ArrayCollection();
+    } //In Progress - Review - Done
 
     public function getId(): ?int
     {
@@ -135,6 +168,114 @@ class Task
     public function setStatus(string $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TaskComment>
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(TaskComment $comment): static
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments->add($comment);
+            $comment->setTask($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(TaskComment $comment): static
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getTask() === $this) {
+                $comment->setTask(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TaskTag>
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(TaskTag $tag): static
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags->add($tag);
+        }
+
+        return $this;
+    }
+
+    public function removeTag(TaskTag $tag): static
+    {
+        $this->tags->removeElement($tag);
+
+        return $this;
+    }
+
+    public function getStartDate(): ?\DateTime
+    {
+        return $this->startDate;
+    }
+
+    public function setStartDate(?\DateTime $startDate): static
+    {
+        $this->startDate = $startDate;
+
+        return $this;
+    }
+
+    public function getWorkload(): ?int
+    {
+        return $this->workload;
+    }
+
+    public function setWorkload(?int $workload): static
+    {
+        $this->workload = $workload;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Workload>
+     */
+    public function getWorkloads(): Collection
+    {
+        return $this->workloads;
+    }
+
+    public function addWorkload(Workload $workload): static
+    {
+        if (!$this->workloads->contains($workload)) {
+            $this->workloads->add($workload);
+            $workload->setTask($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWorkload(Workload $workload): static
+    {
+        if ($this->workloads->removeElement($workload)) {
+            // set the owning side to null (unless already changed)
+            if ($workload->getTask() === $this) {
+                $workload->setTask(null);
+            }
+        }
 
         return $this;
     }

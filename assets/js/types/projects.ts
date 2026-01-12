@@ -58,7 +58,8 @@ interface ProjectPageProps {
     milestones: Milestone[];
     all_roles: Role[];
     all_users: User[];
-    kanban: KanbanProps
+    kanban: KanbanProps,
+    epics: Epic[]
 }
 
 interface TeamMembersProps {
@@ -107,15 +108,35 @@ interface GanttChartProps {
     milestones: Milestone[];
 }
 
+interface Comment {
+    id: string;
+    content: string;
+}
+interface Tag {
+    id: string;
+    label: string;
+}
+
+interface Workload {
+    id: string;
+    month: number;
+    year: number;
+    days: string;
+}
+
 interface Task {
     id: string
     title: string
     description: string
     completed: boolean
     assignee: string
+    startDate: string
     dueDate: string
     status: string;
-    priority: "Low" | "Medium" | "High"
+    priority: "Low" | "Medium" | "High",
+    comments: Comment[];
+    tags: Tag[],
+    workloads: Workload[]
 }
 
 interface KanbanPanelProps {
@@ -123,7 +144,39 @@ interface KanbanPanelProps {
     project: Project;
 }
 
+interface WorkloadProps {
+    project: Project;
+    milestones: Milestone[];
+}
+
+interface Story {
+    id: string;
+    title: string;
+    acceptanceCriteria: string;
+    description: string;
+    status: string;
+    priority: "Low" | "Medium" | "High";
+    creator: User;
+}
+interface Epic {
+    id: string;
+    title: string;
+    resume: string;
+    description: string;
+    status: string;
+    priority: "Low" | "Medium" | "High";
+    creator: User;
+    creationDate: string;
+    stories?: Story[];
+}
+
+interface EpicListProps {
+    epics: Epic[];
+}
+
 export type { Project, ProjectsPageProps, ProjectModalProps,
-    ProjectFormData, ProjectConfirmProps, ProjectPageProps, GanttTask, GanttChartProps, Milestone, Task, TeamMembersProps, KanbanPanelProps };
+    ProjectFormData, ProjectConfirmProps, ProjectPageProps, GanttTask, GanttChartProps, Milestone,
+    Task, TeamMembersProps, KanbanPanelProps, WorkloadProps, EpicListProps, Epic, Story
+};
 
 

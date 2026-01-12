@@ -7,11 +7,14 @@ import { ArrowLeft, Calendar, Clock, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useState } from 'react';
-import GanttChart from '@/components/project/GanttChart';
+import { useState, useMemo } from 'react';
 import { TeamMembers } from '@/components/project/TeamMembers';
 import MilestoneList from "@/components/project/MilestoneList";
 import Kanban from "@/components/project/Kanban";
+import Gantt from "@/components/project/Gantt";
+import Workload from "@/components/project/Workload";
+import { Provider } from 'jotai';
+import EpicList from "@/components/project/EpicList";
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -28,8 +31,39 @@ const breadcrumbs: BreadcrumbItem[] = [
     }
 ];
 
-export default function ProjectPage({ project, members, milestones, all_users, all_roles, kanban }: ProjectPageProps ) {
+export default function ProjectPage({ project, members, milestones, all_users, all_roles, kanban, epics }: ProjectPageProps ) {
     const [activeTab, setActiveTab] = useState('planning');
+
+    const tasksForKibo = useMemo(() => {
+        return milestones.flatMap((milestone) => {
+            // 1. On crée l'entrée pour la Milestone
+            const milestoneEntry = {
+                id: `milestone-${milestone.id}`,
+                name: milestone.title.toUpperCase(),
+                start: new Date(milestone.startDate),
+                end: new Date(milestone.endDate),
+                progress: milestone.progress,
+                type: "project", // Type spécial pour les regroupements
+                hideChildren: false,
+                displayOrder: 1,
+            };
+
+            // 2. On crée les entrées pour les tâches enfants
+            const taskEntries = milestone.tasks.map((task) => ({
+                id: `task-${task.id}`,
+                name: task.title,
+                start: new Date(task.startDate),
+                end: new Date(task.dueDate),
+                progress: task.completed ? 100 : 0,
+                parentId: `milestone-${milestone.id}`, // Lien vers le parent
+                type: "task",
+                project: `milestone-${milestone.id}`,
+            }));
+
+            return [milestoneEntry, ...taskEntries];
+        });
+    }, [milestones]);
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={project.name} />
@@ -98,12 +132,14 @@ export default function ProjectPage({ project, members, milestones, all_users, a
                 </div>
                 {/* Tabs */}
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-                    <TabsList className="grid w-full grid-cols-6">
+                    <TabsList className="grid w-full grid-cols-8">
                         <TabsTrigger value="planning">Planning</TabsTrigger>
                         <TabsTrigger value="workload">Workload</TabsTrigger>
                         <TabsTrigger value="milestones">Milestones</TabsTrigger>
+                        <TabsTrigger value="epics">Epics</TabsTrigger>
+                        <TabsTrigger value="stories">Stories</TabsTrigger>
+                        <TabsTrigger value="tasks">Tasks</TabsTrigger>
                         <TabsTrigger value="kanban">Kanban</TabsTrigger>
-                        <TabsTrigger value="files">Files</TabsTrigger>
                         <TabsTrigger value="team">Team</TabsTrigger>
                     </TabsList>
                     <TabsContent value="planning" className="space-y-4">
@@ -113,18 +149,44 @@ export default function ProjectPage({ project, members, milestones, all_users, a
                                 <CardDescription>Gantt chart view of project tasks and milestones</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <GanttChart project={project} milestones={milestones} />
+                                <Gantt project={project} milestones={milestones} />
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+                    <TabsContent value="workload" className="space-y-4">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Project Workload</CardTitle>
+                                <CardDescription>Gantt chart view of project workload</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Provider>
+                                    <Workload project={project} milestones={milestones} />
+                                </Provider>
                             </CardContent>
                         </Card>
                     </TabsContent>
                     <TabsContent value="milestones" className="space-y-4">
                         <Card>
-                            <CardHeader>
-                                <CardTitle>Project Milestones</CardTitle>
-                                <CardDescription>Manage project operations and their associated tasks</CardDescription>
-                            </CardHeader>
                             <CardContent>
                                 <MilestoneList project={project} milestones={milestones} />
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+                    <TabsContent value="epics" className="space-y-4">
+                        <Card>
+                            <CardContent>
+                                <EpicList epics={epics} />
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+                    <TabsContent value="stories" className="space-y-4">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Project Stories</CardTitle>
+                                <CardDescription>Project user stories. "As a..", "I want..", "to.."</CardDescription>
+                            </CardHeader>
+                            <CardContent>
                             </CardContent>
                         </Card>
                     </TabsContent>

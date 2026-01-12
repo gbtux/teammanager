@@ -1,51 +1,44 @@
-import {GanttChartProps, Milestone, Task} from "@/types/projects";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import {Epic, EpicListProps, Milestone, Story, Task} from "@/types/projects";
 import {Button} from "@/components/ui/button";
 import {Calendar, Plus} from "lucide-react";
+import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
 import {getPriorityColor, getStatusColor, getTaskStatusColor} from "@/lib/utils";
 import {Progress} from "@/components/ui/progress";
 
-export default function MilestoneList({ project, milestones }: GanttChartProps) {
-    console.log("MilestoneList", milestones);
-    const toggleTaskCompletion = (operationId: string, taskId: string) => {
-
-    }
+export default function EpicList({epics} : EpicListProps) {
 
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">Milestones</h3>
+                <h3 className="text-lg font-semibold">Epics</h3>
                 <Button size="sm">
                     <Plus className="h-4 w-4 mr-2" />
-                    Add Milestone
+                    Add Epic
                 </Button>
             </div>
 
             <Accordion type="multiple" className="space-y-4">
-                {milestones.map((milestone: Milestone) => (
-                    <AccordionItem key={milestone.id} value={milestone.id} className="border rounded-lg">
+                {epics.map((epic: Epic) => (
+                    <AccordionItem key={epic.id} value={epic.id} className="border rounded-lg">
                         <Card>
                             <AccordionTrigger className="hover:no-underline">
                                 <CardHeader className="flex-1">
                                     <div className="flex items-start justify-between w-full">
                                         <div className="space-y-2 text-left">
-                                            <CardTitle className="text-lg">{milestone.title}</CardTitle>
-                                            <p className="text-sm text-muted-foreground">{milestone.description}</p>
+                                            <CardTitle className="text-lg">{epic.title}</CardTitle>
+                                            <p className="text-sm text-muted-foreground">{epic.description}</p>
                                             <div className="flex items-center space-x-4 text-sm">
                                                 <div className="flex items-center space-x-1">
-                                                    <Calendar className="h-3 w-3" />
-                                                    <span>{milestone.startDate} - {milestone.endDate}</span>
+
                                                 </div>
-                                                <Badge variant={getStatusColor(milestone.status)}>{milestone.status}</Badge>
+                                                <Badge variant={getStatusColor(epic.status)}>{epic.status}</Badge>
                                             </div>
                                         </div>
                                         <div className="flex items-center space-x-2">
                                             <div className="text-right space-y-2">
-                                                <div className="text-sm font-medium">{milestone.progress}%</div>
-                                                <Progress value={milestone.progress} className="w-20 mb-1" />
-                                                <span>{milestone.tasks.length} tasks</span>
+                                                <span>{epic.stories?.length} stories</span>
                                             </div>
                                         </div>
                                     </div>
@@ -55,32 +48,30 @@ export default function MilestoneList({ project, milestones }: GanttChartProps) 
                                 <CardContent className="pt-0">
                                     <div className="space-y-3">
                                         <div className="flex items-center justify-between">
-                                            <h4 className="font-medium">Tasks ({milestone.tasks.length})</h4>
+                                            <h4 className="font-medium">Stories ({epic.stories?.length})</h4>
                                         </div>
                                         <div className="space-y-2">
-                                            {milestone.tasks.map((task: Task) => (
+                                            {epic.stories?.map((story: Story) => (
                                                 <div
-                                                    key={task.id}
+                                                    key={story.id}
                                                     className="flex items-center space-x-3 py-3 px-5 border rounded-lg hover:bg-muted/50"
                                                 >
                                                     <div className="flex items-start justify-between w-full">
                                                         <div className="flex-1 space-y-1">
-                                                            <div
-                                                                className={`font-medium ${task.completed ? "line-through text-muted-foreground" : ""}`}
-                                                            >
-                                                                {task.title}
+                                                            <div className="font-medium">
+                                                                {story.title}
                                                             </div>
-                                                            <div className="text-sm text-muted-foreground">{task.description}</div>
+                                                            <div className="text-sm text-muted-foreground">{story.description}</div>
                                                             <div className="flex items-center space-x-2 text-xs">
-                                                                <Badge variant={getPriorityColor(task.priority)} className="text-xs">
-                                                                    {task.priority}
+                                                                <Badge variant={getPriorityColor(story.priority)} className="text-xs">
+                                                                    {story.priority}
                                                                 </Badge>
-                                                                <span className="text-muted-foreground">Due: {task.dueDate}</span>
-                                                                <span className="text-muted-foreground">Assigned to: {task.assignee}</span>
+                                                                <span className="text-muted-foreground">Created: story.creationDate</span>
+                                                                <span className="text-muted-foreground">Creator: {story.creator.name}</span>
                                                             </div>
                                                         </div>
                                                         <div className="flex items-center space-x-2">
-                                                            <Badge variant="secondary" className={getTaskStatusColor(task.status)}>{task.status}</Badge>
+                                                            <Badge variant="secondary" className={getTaskStatusColor(story.status)}>{story.status}</Badge>
                                                         </div>
                                                     </div>
                                                 </div>

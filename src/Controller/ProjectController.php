@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Project;
 use App\Form\ProjectType;
+use App\Repository\EpicRepository;
 use App\Repository\MilestoneRepository;
 use App\Repository\ProjectMemberRepository;
 use App\Repository\ProjectRepository;
@@ -33,7 +34,8 @@ final class ProjectController extends AbstractController
                          UserRepository $userRepository,
                          RoleRepository $roleRepository,
                          MilestoneRepository $milestoneRepository,
-                         TaskRepository $taskRepository
+                         TaskRepository $taskRepository,
+                         EpicRepository $epicRepository
     ): Response
     {
         $kanbanData = [
@@ -55,12 +57,21 @@ final class ProjectController extends AbstractController
                     'completed' => $task->isCompleted(),
                     'assignee' => $task->getAssignee()->getName(),
                     'milestoneTitle' => $task->getMilestone()->getTitle(),
+                    'comments' => $task->getComments()->map(fn($comment) => [
+                        'id' => $comment->getId(),
+                        'content' => $comment->getContent(),
+                    ])->toArray(),
+                    'tags' => $task->getTags()->map(fn($tag) => [
+                        'id' => $tag->getId(),
+                        'label' => $tag->getLabel(),
+                    ])->toArray(),
                 ];
             }
         }
 
         $members = $memberRepository->findBy(['project' => $project]);
         $milestones = $milestoneRepository->findByProjectWithTasks($project);
+        $epics = $epicRepository->findByProjectWithStoriesCount($project);
         return $this->inertiaRender('projects/show', [
             "project" => $project,
             "members" => $members,
@@ -86,11 +97,19 @@ final class ProjectController extends AbstractController
                     'completed' => $task->isCompleted(),
                     'priority' => $task->getPriority(),
                     'status' => $task->getStatus(),
+                    'startDate' => $task->getStartDate()->format('Y-m-d'),
                     'dueDate' => $task->getDueDate()->format('Y-m-d'),
                     'assignee' => $task->getAssignee()->getName(),
+                    'workloads' => $task->getWorkloads()->map(fn($workload) => [
+                        'id' => $workload->getId(),
+                        'year' => $workload->getYear(),
+                        'month' => $workload->getMonth(),
+                        'days' => $workload->getDays(),
+                    ])->toArray()
                 ])->toArray(),
             ], $milestones),
-            'kanban' => $kanbanData
+            'kanban' => $kanbanData,
+            'epics' => $epics
         ]);
     }
 

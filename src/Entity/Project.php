@@ -56,10 +56,17 @@ class Project
     #[ORM\OneToMany(targetEntity: Milestone::class, mappedBy: 'project')]
     private Collection $milestones;
 
+    /**
+     * @var Collection<int, Epic>
+     */
+    #[ORM\OneToMany(targetEntity: Epic::class, mappedBy: 'project')]
+    private Collection $epics;
+
     public function __construct()
     {
         $this->projectMembers = new ArrayCollection();
         $this->milestones = new ArrayCollection();
+        $this->epics = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -229,6 +236,36 @@ class Project
             // set the owning side to null (unless already changed)
             if ($milestone->getProject() === $this) {
                 $milestone->setProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Epic>
+     */
+    public function getEpics(): Collection
+    {
+        return $this->epics;
+    }
+
+    public function addEpic(Epic $epic): static
+    {
+        if (!$this->epics->contains($epic)) {
+            $this->epics->add($epic);
+            $epic->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEpic(Epic $epic): static
+    {
+        if ($this->epics->removeElement($epic)) {
+            // set the owning side to null (unless already changed)
+            if ($epic->getProject() === $this) {
+                $epic->setProject(null);
             }
         }
 

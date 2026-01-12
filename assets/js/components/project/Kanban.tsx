@@ -40,7 +40,9 @@ export default function Kanban({project, kanban} : KanbanPanelProps) {
         }
 
         // 1. Préparation de la mise à jour locale (Optimistic UI)
+        // @ts-ignore
         const sourceCol = [...data[source.droppableId]];
+        // @ts-ignore
         const destCol = [...data[destination.droppableId]];
         const [movedTask] = sourceCol.splice(source.index, 1);
 
@@ -59,7 +61,7 @@ export default function Kanban({project, kanban} : KanbanPanelProps) {
                 status: destination.droppableId // Le droppableId correspond au nom de la colonne
             }, {
                 preserveScroll: true,
-                onErrors: () => setData(kanban) // On annule si le serveur refuse
+                onError: () => setData(kanban) // On annule si le serveur refuse
             });
         }
     }
@@ -97,7 +99,7 @@ export default function Kanban({project, kanban} : KanbanPanelProps) {
                                                     {...provided.dragHandleProps}
                                                 >
                                                     <Card key={task.id} className="hover:shadow-md transition-shadow cursor-pointer">
-                                                        <CardContent className="p-4 space-y-3">
+                                                        <CardContent className="px-4 space-y-3">
                                                             <div className="flex items-start justify-between">
                                                                 <h5 className="font-medium text-sm">{task.title}</h5>
                                                                 <DropdownMenu>
@@ -108,7 +110,6 @@ export default function Kanban({project, kanban} : KanbanPanelProps) {
                                                                     </DropdownMenuTrigger>
                                                                     <DropdownMenuContent align="end">
                                                                         <DropdownMenuItem>Edit</DropdownMenuItem>
-                                                                        <DropdownMenuItem>Move</DropdownMenuItem>
                                                                         <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
                                                                     </DropdownMenuContent>
                                                                 </DropdownMenu>
@@ -117,17 +118,17 @@ export default function Kanban({project, kanban} : KanbanPanelProps) {
                                                             <p className="text-xs text-muted-foreground">{task.description}</p>
 
                                                             <div className="flex flex-wrap gap-1">
-                                                                {/*{task.tags.map((tag) => (
-                                                                    <Badge key={tag} variant="outline" className="text-xs">
-                                                                        {tag}
+                                                                {task.tags?.map((tag) => (
+                                                                    <Badge key={tag.id} variant="outline" className="text-xs">
+                                                                        {tag.label}
                                                                     </Badge>
-                                                                ))}*/}
+                                                                ))}
                                                             </div>
 
                                                             <div className="flex items-center justify-between">
                                                                 <div className="flex items-center space-x-2">
                                                                     <Avatar className="h-6 w-6">
-                                                                        <AvatarFallback className="text-xs">{getInitials(task.assignee)}</AvatarFallback>
+                                                                        <AvatarFallback className="text-xs bg-blue-500 text-white">{getInitials(task.assignee)}</AvatarFallback>
                                                                     </Avatar>
                                                                     <Badge variant={getPriorityColor(task.priority)} className="text-xs">
                                                                         {task.priority}
@@ -139,13 +140,13 @@ export default function Kanban({project, kanban} : KanbanPanelProps) {
                                                                         <Calendar className="h-3 w-3" />
                                                                         <span>{task.dueDate}</span>
                                                                     </div>
-                                                                    {/*{task.comments > 0 && (
+                                                                    {task.comments.length > 0 && (
                                                                         <div className="flex items-center space-x-1">
                                                                             <MessageSquare className="h-3 w-3" />
-                                                                            <span>{task.comments}</span>
+                                                                            <span>{task.comments.length}</span>
                                                                         </div>
                                                                     )}
-                                                                    {task.attachments > 0 && (
+                                                                    {/*{task.attachments > 0 && (
                                                                         <div className="flex items-center space-x-1">
                                                                             <Paperclip className="h-3 w-3" />
                                                                             <span>{task.attachments}</span>

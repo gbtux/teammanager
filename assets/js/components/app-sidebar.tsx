@@ -10,7 +10,7 @@ import AppLogoMini from "@/components/app-logo-mini";
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: '/dashboard',
+        href: '/',
         icon: LayoutGrid,
     },
     {
